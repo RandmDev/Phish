@@ -34,31 +34,35 @@
     </div>
 
     <script>
-        async function sendMessage() {
-            const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A'; // Doğru değişken adı
-            const userId = 7767108844; // Numeric ID
-            const message = 'Merhaba Dünya!'; // Mesaj eklendi
+async function sendMessage() {
+    const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
+    const userId = 7767108844;
+    const message = 'Merhaba Dünya!';
 
-            // CORS çözümü için proxy
-            const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-            const apiUrl = `${proxyUrl}https://api.telegram.org/bot${token}/sendMessage`;
+    // Yeni CORS proxy (cors-anywhere alternatifi)
+    const proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest=';
+    const apiUrl = `${proxyUrl}https://api.telegram.org/bot${token}/sendMessage`;
 
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        chat_id: userId,
-                        text: message // Mesaj parametresi eklendi
-                    })
-                });
-                
-                const result = await response.json();
-                alert(result.ok ? 'Başarılı!' : 'Hata: ' + result.description);
-            } catch (error) {
-                alert('Hata: ' + error.message);
-            }
-        }
-    </script>
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                chat_id: userId,
+                text: message
+            })
+        });
+        
+        // Ham yanıtı kontrol et
+        const rawResponse = await response.text();
+        console.log('Raw Response:', rawResponse); // Hata ayıklama için
+        
+        const result = JSON.parse(rawResponse);
+        alert(result.ok ? 'Başarılı!' : 'Hata: ' + result.description);
+    } catch (error) {
+        alert('JSON Parse Hatası: ' + error.message);
+    }
+}
+</script>
 </body>
 </html>
