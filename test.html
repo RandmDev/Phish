@@ -5,25 +5,38 @@
 
   <body>
     <script>
-      async function test(event) {
-      event.preventDefault();
-      const email = 'test';
-      const botToken = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A'; // <-- Insert your bot token here
-      const chatId = '@codeutk';     // <-- Insert your chat ID here
-      const message = `Email address: ${email}`;
-      
-      const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-      
-      try {
-        await fetch(url);
-        console.log('it worked! i guess?');
-      } catch (error) {
-        console.error('Error sending message to Telegram:', error);
-      }
-      }
+      document.getElementById('sendMessage').addEventListener('click', function() {
+    const botToken = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
+    const chatId = '@codeutk';
+    const message = 'Hello World';
+
+    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chat_id: chatId,
+            text: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            alert('Message sent successfully!');
+        } else {
+            alert('Error sending message: ' + data.description);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error sending message');
+    });
+});
+
     </script>
     <form onsubmit="test(event)">
-      <button type="submit">test</button>
+      <button id="sendMessage">test</button>
     </form>
   </body>
 </html>
