@@ -1,68 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Telegram Bot</title>
+    <title>Telegram Bot Fix</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #f0f2f5;
-        }
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        button {
-            background: #0088cc;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; background: #0088cc; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <button onclick="sendMessage()">Mesaj Gönder</button>
-    </div>
+    <button onclick="sendMessage()">Mesaj Gönder</button>
 
     <script>
-async function sendMessage() {
-    const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
-    const userId = 7767108844;
-    const message = 'Merhaba Dünya!';
+        async function sendMessage() {
+            const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
+            const userId = 7767108844;
+            const message = 'Hello World!';
 
-    // Yeni CORS proxy (cors-anywhere alternatifi)
-    const proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest=';
-    const apiUrl = `${proxyUrl}https://api.telegram.org/bot${token}/sendMessage`;
+            // Yeni güvenilir CORS proxy
+            const proxyUrl = 'https://proxy.cors.sh/';
+            const apiEndpoint = `https://api.telegram.org/bot${token}/sendMessage`;
 
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                chat_id: userId,
-                text: message
-            })
-        });
-        
-        // Ham yanıtı kontrol et
-        const rawResponse = await response.text();
-        console.log('Raw Response:', rawResponse); // Hata ayıklama için
-        
-        const result = JSON.parse(rawResponse);
-        alert(result.ok ? 'Başarılı!' : 'Hata: ' + result.description);
-    } catch (error) {
-        alert('JSON Parse Hatası: ' + error.message);
-    }
-}
-</script>
+            try {
+                const response = await fetch(proxyUrl + apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-cors-api-key': 'temp_654cba3e8e6d9607d23e9c4b4d4c3a92' // Ücretsiz API anahtarı
+                    },
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: message
+                    })
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const result = await response.json();
+                alert(result.ok ? 'Mesaj gönderildi!' : 'Telegram Hatası: ' + result.description);
+            } catch (error) {
+                alert('Kritik Hata: ' + error.message);
+            }
+        }
+    </script>
 </body>
 </html>
