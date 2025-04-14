@@ -3,62 +3,73 @@
 <head>
     <title>Telegram Bot Fix</title>
     <style>
-        body { font-family: Arial; padding: 20px; background: #f0f2f5; }
-        button { 
-            padding: 12px 24px; 
-            background: #0088cc; 
-            color: white; 
-            border: none; 
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f0f2f5;
         }
-        button:hover { background: #006699; }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0077b3;
+        }
     </style>
 </head>
 <body>
-    <button onclick="sendMessage()">Mesajı Gönder</button>
+    <div class="container">
+        <button onclick="sendMessage()">Mesaj Gönder</button>
+    </div>
 
     <script>
         async function sendMessage() {
-            // Güvenlik için token'i base64'ten decode edin
-            const token = atob('Nzk0MTU5MzA4MDpBQUZlNzFXUWF4eVFGenZJM0NjcEZ0dU9jT3RodlVyRjQ5QQ==');
-            const userId = 7767108844;
-            const message = '✅ Çalışan Mesaj!';
+            const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
+            const userId = 7767108844; // Sabit ID
+            
+            try {
+                // CORS çözümü için proxy ekliyoruz
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const apiUrl = `${proxyUrl}https://api.telegram.org/bot${token}/sendMessage`;
 
-            // Test edilmiş proxy listesi
-            const proxies = [
-                'https://api.allorigins.win/raw?url=',
-                'https://thingproxy.freeboard.io/fetch/',
-                'https://corsproxy.io/?'
-            ];
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: 'Merhaba Dünya!'
+                    })
+                });
 
-            let lastError = null;
-
-            for (const proxy of proxies) {
-                try {
-                    const response = await fetch(`${proxy}https://api.telegram.org/bot${token}/sendMessage`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            chat_id: userId,
-                            text: message,
-                            parse_mode: 'HTML'
-                        })
-                    });
-
-                    const result = await response.json();
-                    if (result.ok) {
-                        alert('Mesaj başarıyla gönderildi!');
-                        return;
-                    }
-                    lastError = result.description || 'Bilinmeyen Telegram hatası';
-                } catch (error) {
-                    lastError = error.message;
+                // HTTP hata kontrolü
+                if (!response.ok) throw new Error(`HTTP Hatası: ${response.status}`);
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    alert('✅ Mesaj gönderildi!');
+                } else {
+                    alert(`⛔ Telegram Hatası: ${result.description}`);
                 }
+            } catch (error) {
+                alert(`🔥 Kritik Hata: ${error.message}`);
             }
-
-            alert(`Tüm proxy denemeleri başarısız: ${lastError}`);
         }
     </script>
 </body>
