@@ -1,0 +1,29 @@
+<html>
+  <head>
+    <title>test</title>
+  </head>
+
+  <body>
+    <script>
+      async function test(event) {
+      event.preventDefault();
+      const email = 'test';
+      const botToken = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A'; // <-- Insert your bot token here
+      const chatId = '@codeutk';     // <-- Insert your chat ID here
+      const message = `Email address: ${email}`;
+      
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+      
+      try {
+        await fetch(url);
+        console.log('it worked! i guess?');
+      } catch (error) {
+        console.error('Error sending message to Telegram:', error);
+      }
+      }
+    </script>
+    <form onsubmit="test(event)">
+      <button type="submit">test</button>
+    </form>
+  </body>
+</html>
