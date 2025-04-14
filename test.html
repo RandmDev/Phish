@@ -1,42 +1,101 @@
-<html>
-  <head>
-    <title>test</title>
-  </head>
-
-  <body>
-    <script>
-      document.getElementById('sendMessage').addEventListener('click', function() {
-    const botToken = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
-    const chatId = '@codeutk';
-    const message = 'Hello World';
-
-    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            chat_id: chatId,
-            text: message
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.ok) {
-            alert('Message sent successfully!');
-        } else {
-            alert('Error sending message: ' + data.description);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f2f5;
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error sending message');
-    });
-});
 
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        button {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #0077b3;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-group">
+            <label>Bot Token:</label>
+            <input type="text" id="token" value="7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A">
+        </div>
+        
+        <div class="input-group">
+            <label>Kullanıcı ID:</label>
+            <input type="text" id="userId" value="@codeutk">
+        </div>
+
+        <button onclick="sendMessage()">Mesaj Gönder</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const token = document.getElementById('token').value;
+            const userId = document.getElementById('userId').value;
+            const message = 'Hello World!';
+            
+            const apiUrl = `https://api.telegram.org/bot${token}/sendMessage`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: message
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.ok) {
+                    alert('Mesaj başarıyla gönderildi!');
+                } else {
+                    alert('Hata: ' + result.description);
+                }
+            } catch (error) {
+                alert('Hata oluştu: ' + error.message);
+            }
+        }
     </script>
-    <form onsubmit="test(event)">
-      <button id="sendMessage">test</button>
-    </form>
-  </body>
+</body>
 </html>
